@@ -20,11 +20,15 @@ seq.theta <- matrix(seq(from = -3.5, to = 3.5,by = 0.01), ncol = 1)
 t.final <- rep(NA,N)
 
 # Creating Parallel Setup
+# Setting up number of cores
 C<-4 # Number of cores in use for parallel
 dC<-detectCores(logical = FALSE)
 C<-min(dC,C)
+# Creating cluster
 cl <- makeCluster(C)
+# Setting up worker nodes
 registerDoParallel(cl)
+# Initializing seed for parallel
 seed<-10
 registerDoRNG(seed)
 
