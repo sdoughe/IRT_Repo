@@ -1,5 +1,6 @@
 this.dir = dirname(rstudioapi::getActiveDocumentContext()$path)
 setwd(this.dir)
+## Did I update my email address
 ### Optimize CAT Example Code
 #Source to IrtFunctions file, which needs to be in the working directory
 source("IrtFunctions.R")
