@@ -1,6 +1,7 @@
 this.dir = dirname(rstudioapi::getActiveDocumentContext()$path)
 setwd(this.dir)
 library(Rcpp)
+#### This is checking if GITHUB Works
 ### Optimize CAT Example Code
 #Source to IrtFunctions file, which needs to be in the working directory
 sourceCpp("IrtFunctions.cpp")
