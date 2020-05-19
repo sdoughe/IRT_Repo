@@ -1,10 +1,7 @@
-
-
 #include<Rcpp.h>
 #include<cmath>
 
 using namespace Rcpp;
-
 
 // IRF Function
 //[[Rcpp::export]]
