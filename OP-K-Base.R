@@ -45,7 +45,7 @@ registerDoParallel(cl)
 registerDoRNG()
 
 #Begin exam simulation
-t.final<- foreach (i = 1:N, .combine = c) %dopar% {
+t.final <- foreach (i = 1:N, .combine = c) %dopar% {
   
   #Reset bank,exam,response vector for each examinee
   B.i <- B
