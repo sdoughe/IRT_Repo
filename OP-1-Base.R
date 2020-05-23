@@ -15,7 +15,7 @@ M <- 200
 THETA <- rnorm(N)
 
 #Generate vectors of item parameters and bind together
-B <- cbind(runif( M, 0.3, 1.2), runif(M, -2, 2), runif(M, 0, 0.25) )
+B <- cbind(runif(M, 0.3, 1.2), runif(M, -2, 2), runif(M, 0, 0.25))
 
 #Set empty vector for storing final theta estimates
 t.final <- rep(NA, N)
@@ -41,7 +41,7 @@ for (i in 1:N){
   for (j in 1:J){
     
     #select next item by maximizing Fisher information at theta hat
-    max_index <- which.max(info.items(B.i[, 1], B.i[, 2], B.i[, 3], t.ij) )
+    max_index <- which.max(info.items(B.i[, 1], B.i[, 2], B.i[, 3], t.ij))
     
     #add selected item to the exam
     exam.i[j, ] <- B.i[max_index, ]
