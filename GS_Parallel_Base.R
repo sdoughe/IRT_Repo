@@ -25,7 +25,7 @@ B <- cbind(runif(M, 0.3, 1.2), runif(M, -2, 2), runif(M, 0, 0.25))
 seq.theta <- matrix(seq(from = -3.5, to = 3.5, by = 0.01), ncol = 1)
 
 #Set empty vector for storing final theta estimates
-t.final <- rep(NA,N)
+t.final <- rep(NA, N)
 
 # Creating Parallel Setup
 # Setting a number of cores to use
@@ -35,7 +35,7 @@ C <- 4
 dC <- detectCores(logical = FALSE)
 
 # Running on 4 cores or max cores available on machine
-C <- min(dC,C)
+C <- min(dC, C)
 
 # Creating cluster
 cl <- makeCluster(C)
