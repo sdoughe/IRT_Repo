@@ -19,18 +19,23 @@ M <- 200
 THETA <- rnorm(N)
 
 #Generate vectors of item parameters and bind together
-B <- cbind(runif(M, 0.3, 1.2),runif(M, -2, 2),runif(M, 0, 0.25))
+B <- cbind(runif(M, 0.3, 1.2), runif(M, -2, 2), runif(M, 0, 0.25))
 
 #Generate sequence of thetas for grid search
-seq.theta <- matrix(seq(from = -3.5, to = 3.5,by = 0.01), ncol = 1)
+seq.theta <- matrix(seq(from = -3.5, to = 3.5, by = 0.01), ncol = 1)
 
 #Set empty vector for storing final theta estimates
 t.final <- rep(NA,N)
 
 # Creating Parallel Setup
-C<-4
-dC<-detectCores(logical = FALSE)
-C<-min(dC,C)
+# Setting a number of cores to use
+C <- 4
+
+# Checking number of cores available on machine
+dC <- detectCores(logical = FALSE)
+
+# Running on 4 cores or max cores available on machine
+C <- min(dC,C)
 
 # Creating cluster
 cl <- makeCluster(C)
@@ -42,7 +47,7 @@ registerDoParallel(cl)
 registerDoRNG()
 
 #Begin exam simulation
-t.final<- foreach (i = 1:N, .combine = c, .options.RNG=seed ) %dorng% {
+t.final<- foreach (i = 1:N, .combine = c) %dopar% {
   
   #Reset bank,exam,response vector for each examinee
   B.i <- B
@@ -65,7 +70,7 @@ t.final<- foreach (i = 1:N, .combine = c, .options.RNG=seed ) %dorng% {
     y.i[j] <- rbinom(1, 1, IRF(exam.i[j, 1], exam.i[j, 2], exam.i[j, 3], THETA[i]))
     
     #Grid Search for MLE of Loglikelihood
-    loglkhd.vec <- apply(seq.theta, 1, loglkhd,exam = exam.i[1:j,],y = y.i[1:j])
+    loglkhd.vec <- apply(seq.theta, 1, loglkhd, exam = exam.i[1:j,], y = y.i[1:j])
     t.ij <- seq.theta[which.max(loglkhd.vec), ]
     
     #Remove selected item from bank
@@ -74,7 +79,7 @@ t.final<- foreach (i = 1:N, .combine = c, .options.RNG=seed ) %dorng% {
   }
   
   #store final theta estimate for examinee i
-  to.t.final<-t.ij
+  to.t.final <- t.ij
   to.t.final
   
 }
@@ -83,5 +88,5 @@ stopCluster(cl)
 
 #compute bias and MSE, respectively
 mean(THETA - t.final)
-mean((THETA - t.final)^2)
+mean((THETA - t.final) ^ 2)
 

@@ -1,6 +1,4 @@
 library(Rcpp)
-library(foreach)
-library(doRNG)
 
 #Source to Irt Functions file, which needs to be in the working directory
 sourceCpp("IrtFunctions.cpp")
@@ -19,19 +17,19 @@ M <- 200
 THETA <- rnorm(N)
 
 #Generate vectors of item parameters and bind together
-B <- cbind( runif( M, 0.3, 1.2), runif(M, -2, 2), runif(M, 0, 0.25) )
-
-#Generate sequence of thetas for grid search
-seq.theta <- matrix(seq(from = -3.5, to = 3.5,by = 0.01), ncol = 1)
+B <- cbind(runif( M, 0.3, 1.2), runif(M, -2, 2), runif(M, 0, 0.25))
 
 #Set empty vector for storing final theta estimates
 t.final <- rep(NA, N)
 
-# Register Do Sequential
-registerDoSEQ()
+# Introduce rng.seeds for reproducible results in parallel
+rng.seeds <- RNGseq(N, seed = .Random.seed)
 
 #Begin exam simulation
-t.final <- foreach ( i = 1:N, .combine = c, .options.RNG = seed) %dorng% {
+for (i in 1:N){
+  
+  # Use appropriate seed
+  .Random.seed <- rng.seeds[[i]]
   
   #Reset bank,exam,response vector for each examinee
   B.i <- B
@@ -45,7 +43,7 @@ t.final <- foreach ( i = 1:N, .combine = c, .options.RNG = seed) %dorng% {
   for (j in 1:J){
     
     #select next item by maximizing Fisher information at theta hat
-    max_index <- which.max( rcpp_info_items( B.i[, 1], B.i[, 2], B.i[, 3], t.ij) )
+    max_index <- which.max(rcpp_info_items(B.i[, 1], B.i[, 2], B.i[, 3], t.ij) )
     
     #add selected item to the exam
     exam.i[j, ] <- B.i[max_index, ]
@@ -62,12 +60,10 @@ t.final <- foreach ( i = 1:N, .combine = c, .options.RNG = seed) %dorng% {
   }
   
   #store final theta estimate for examinee i
-  t.final <- t.ij
-  t.final 
-  
+  t.final[i] <- t.ij
 }
 
 #compute bias and MSE, respectively
 mean(THETA - t.final)
-mean((THETA - t.final)^2)
+mean((THETA - t.final) ^ 2)
 

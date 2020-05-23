@@ -1,12 +1,9 @@
-library(foreach)
-library(doRNG)
-
-#Source to IrtFunctions file, which needs to be in the working directory
+#Source to Irt Functions file, which needs to be in the working directory
 source("IrtFunctions.R")
 
 # Set Seed for Code
 RNGkind(kind = "L'Ecuyer-CMRG")
-seed<-10
+seed <- 10
 set.seed(seed)
 
 #Set N examinees, J items, and bank size (number of items) M
@@ -18,19 +15,22 @@ M <- 200
 THETA <- rnorm(N)
 
 #Generate vectors of item parameters and bind together
-B <- cbind(runif(M, 0.3, 1.2),runif(M, -2, 2),runif(M, 0, 0.25))
+B <- cbind(runif(M, 0.3, 1.2), runif(M, -2, 2), runif(M, 0, 0.25))
 
 #Generate sequence of thetas for grid search
-seq.theta <- matrix(seq(from = -3.5, to = 3.5,by = 0.01), ncol = 1)
+seq.theta <- matrix(seq(from = -3.5, to = 3.5, by = 0.01), ncol = 1)
 
 #Set empty vector for storing final theta estimates
-t.final <- rep(NA,N)
+t.final <- rep(NA, N)
 
-# Register Do Sequential
-registerDoSEQ()
+# Introduce rng.seeds for reproducible results in parallel
+rng.seeds <- RNGseq(N, seed = .Random.seed)
 
 #Begin exam simulation
-t.final <- foreach (i = 1:N,.combine = c, .options.RNG=seed) %dorng% {
+for (i in 1:N){
+  
+  # Use appropriate seed
+  .Random.seed <- rng.seeds[[i]]
   
   #Reset bank,exam,response vector for each examinee
   B.i <- B
@@ -53,7 +53,7 @@ t.final <- foreach (i = 1:N,.combine = c, .options.RNG=seed) %dorng% {
     y.i[j] <- rbinom(1, 1, IRF(exam.i[j, 1], exam.i[j, 2], exam.i[j, 3], THETA[i]))
     
     #Grid Search for MLE of Loglikelihood
-    loglkhd.vec <- apply(seq.theta, 1, loglkhd,exam = exam.i[1:j,],y = y.i[1:j])
+    loglkhd.vec <- apply(seq.theta, 1, loglkhd, exam = exam.i[1:j,], y = y.i[1:j])
     t.ij <- seq.theta[which.max(loglkhd.vec), ]
     
     #Remove selected item from bank
@@ -61,12 +61,11 @@ t.final <- foreach (i = 1:N,.combine = c, .options.RNG=seed) %dorng% {
     
   }
   #store final theta estimate for examinee i
-  t.final <- t.ij
-  t.final
+  t.final[i] <- t.ij
   
 }
 
 #compute bias and MSE, respectively
 mean(THETA - t.final)
-mean((THETA - t.final)^2)
+mean((THETA - t.final) ^ 2)
 
