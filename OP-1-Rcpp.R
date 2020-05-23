@@ -17,7 +17,7 @@ M <- 200
 THETA <- rnorm(N)
 
 #Generate vectors of item parameters and bind together
-B <- cbind(runif( M, 0.3, 1.2), runif(M, -2, 2), runif(M, 0, 0.25))
+B <- cbind(runif(M, 0.3, 1.2), runif(M, -2, 2), runif(M, 0, 0.25))
 
 #Set empty vector for storing final theta estimates
 t.final <- rep(NA, N)
