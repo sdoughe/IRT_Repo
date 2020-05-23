@@ -1,7 +1,5 @@
-
-
 #Source to Irt Functions file, which needs to be in the working directory
-sourceCpp("IrtFunctions.cpp")
+source("IrtFunctions.R")
 
 # Set Seed for Code
 RNGkind(kind = "L'Ecuyer-CMRG")
@@ -43,13 +41,13 @@ for (i in 1:N){
   for (j in 1:J){
     
     #select next item by maximizing Fisher information at theta hat
-    max_index <- which.max(rcpp_info_items(B.i[, 1], B.i[, 2], B.i[, 3], t.ij) )
+    max_index <- which.max(info.items(B.i[, 1], B.i[, 2], B.i[, 3], t.ij) )
     
     #add selected item to the exam
     exam.i[j, ] <- B.i[max_index, ]
     
     #simulate response for current item
-    y.i[j] <- rbinom(1, 1, rcpp_IRF(exam.i[j, 1], exam.i[j, 2], exam.i[j, 3], THETA[i]))
+    y.i[j] <- rbinom(1, 1, IRF(exam.i[j, 1], exam.i[j, 2], exam.i[j, 3], THETA[i]))
     
     #Optimize for MLE of Loglikelihood
     t.ij <- optimize(loglkhd, c(-3.5, 3.5), exam = exam.i[1:j, ], y = y.i[1:j], maximum = TRUE, tol = 1e-12)$maximum
