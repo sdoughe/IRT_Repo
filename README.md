@@ -5,7 +5,7 @@ The Exam styles being simulated are fixed length, binary response exams. (Answer
 
 Each program will return the MSE and Bias of a simulation with tests of length J administered to N students from a question bank of size M, where each item in the question bank has 3 parameters, a: discrimination, b: difficulty, and c: random guessing probability. 
 
-A 3 Parameter Logistic (3PL) model is used to determine the probability that a student with a given latent ability: &theta;, correctly answers the question with given a,b, and c parameters. This latent ability is then estimated using maximum log likelihood, and this estimated value:  &theta;_hat, is used to select the next question to be administered to the student. 
+A 3 Parameter Logistic (3PL) model is used to determine the probability that a student with a given latent ability: &theta;, correctly answers a question with given a, b, and c parameters corresponding to the discrimination factor, the difficulty, and the random guessing parameter of the question being administered. This latent ability is then estimated using maximum log likelihood, and this estimated value:  &theta;_hat, is used to select the next question to be administered to the student. 
   
 Further information on Item Response Theory can be found at:
 
